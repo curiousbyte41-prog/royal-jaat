@@ -2,69 +2,76 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-$token = getenv('bot_token');
-if (!$token) { echo "NO_TOKEN"; exit; }
+// ===== Webhook info (comment only) =====
+// Set webhook (royal-jaat-production.up.railway.app):
+// https://api.telegram.org/bot8706155925:AAHjpKlqQotuhCBPY0a_Urbdmfo-pQ4YeFo/setWebhook?url=https://royal-jaat-production.up.railway.app/bot.php
+// Check webhook:
+// https://api.telegram.org/bot8706155925:AAHjpKlqQotuhCBPY0a_Urbdmfo-pQ4YeFo/getWebhookInfo
 
-$update = json_decode(file_get_contents("php://input"), true);
+// ===== Token from Railway Variables =====
+$botToken = getenv('bot_token');  // Railway variable name must be: bot_token
+if (!$botToken) { http_response_code(500); exit('NO_TOKEN'); }
 
-if (!isset($update["message"])) {
-    http_response_code(200);
-    exit;
-}
-
-$chat_id = $update["message"]["chat"]["id"];
-
-file_get_contents("https://api.telegram.org/bot{$token}/sendMessage?chat_id={$chat_id}&text=Bot is working!");
-
-echo "OK";
-      
-                                //==Webhook Link==//
-
-//https://api.telegram.org/bot8706155925:AAHjpKlqQotuhCBPY0a_Urbdmfo-pQ4YeFo/setwebhook?url=https:///bot.php
-
-$botToken = "8706155925:AAHjpKlqQotuhCBPY0a_Urbdmfo-pQ4YeFo";
 $website = "https://api.telegram.org/bot".$botToken;
-$update = file_get_contents('php://input');
-$update = json_decode($update, TRUE);
-$chatId = $update["message"]["chat"]["id"];
-$gId = $update["message"]["from"]["id"];
-$userId = $update["message"]["from"]["id"];
-$lastname = $update["message"]["from"]["last_name"];
-$firstname = $update["message"]["from"]["first_name"];
-$username = $update["message"]["from"]["username"];
-$r_id = $update["message"]["reply_to_message"];
-$r_userId = $update["message"]["reply_to_message"]["from"]["id"];  
-$r_firstname = $update["message"]["reply_to_message"]["from"]["first_name"];  
-$r_username = $update["message"]["reply_to_message"]["from"]["username"]; 
-$r_msg_id = $update["message"]["reply_to_message"]["message_id"]; 
-$r_msg = $update["message"]["reply_to_message"]["text"]; 
-$message = $update["message"]["text"];
-$message_id = $update["message"]["message_id"];
-$premium = $update["message"]["from"]["is_premium"];
-$p1 = (boolval($premium) ? '𝙿𝚛𝚎𝚖𝚒𝚞𝚖 ✅' : '𝙵𝚛𝚎𝚎 ❌');
-$ownerid = '6185091342';
 
-function GetStr($string, $start, $end){
-$str = explode($start, $string);
-$str = explode($end, $str[1]);  
-return $str[0];
-};
+// ===== Read update safely =====
+$raw = file_get_contents('php://input');
+$update = json_decode($raw, true);
 
-function string_between_two_string($str, $starting_word, $ending_word){ 
-$subtring_start = strpos($str, $starting_word); 
-$subtring_start += strlen($starting_word);   
-$size = strpos($str, $ending_word, $subtring_start) - $subtring_start;   
-return substr($str, $subtring_start, $size);
+// If Telegram sends non-message updates (edited_message, callback_query etc.)
+if (!isset($update['message'])) {
+    http_response_code(200);
+    exit('OK');
 }
 
-if(!empty($r_id)){
-$r_msg = $update["message"]["reply_to_message"]["text"]; 
-$message = $update["message"]["text"]; 
-$message = $message ." ".$r_msg;
+// Safe fields (no 500)
+$chatId     = $update['message']['chat']['id'] ?? null;
+$gId        = $update['message']['from']['id'] ?? 0;
+$userId     = $gId;
+$lastname   = $update['message']['from']['last_name'] ?? '';
+$firstname  = $update['message']['from']['first_name'] ?? '';
+$username   = $update['message']['from']['username'] ?? '';
+$message    = $update['message']['text'] ?? '';
+$message_id = $update['message']['message_id'] ?? 0;
+
+// Reply fields safe
+$r_id        = $update['message']['reply_to_message'] ?? null;
+$r_userId    = $r_id['from']['id'] ?? 0;
+$r_firstname = $r_id['from']['first_name'] ?? '';
+$r_username  = $r_id['from']['username'] ?? '';
+$r_msg_id    = $r_id['message_id'] ?? 0;
+$r_msg       = $r_id['text'] ?? '';
+
+// Premium safe
+$premium = $update['message']['from']['is_premium'] ?? false;
+$p1 = ($premium ? '𝙿𝚛𝚎𝚖𝚒𝚞𝚖 ✅' : '𝙵𝚛𝚎𝚎 ❌');
+
+// Owner from Railway variable (recommended)
+$ownerid = getenv('owner') ?: '6185091342';
+
+// If reply exists, append replied text
+if (!empty($r_id) && $r_msg !== '') {
+    $message = trim($message . " " . $r_msg);
+}
+
+// --- your functions + includes below ---
+function GetStr($string, $start, $end){
+    $str = explode($start, $string);
+    $str = explode($end, $str[1] ?? '');
+    return $str[0] ?? '';
+}
+
+function string_between_two_string($str, $starting_word, $ending_word){
+    $subtring_start = strpos($str, $starting_word);
+    if ($subtring_start === false) return '';
+    $subtring_start += strlen($starting_word);
+    $endpos = strpos($str, $ending_word, $subtring_start);
+    if ($endpos === false) return '';
+    $size = $endpos - $subtring_start;
+    return substr($str, $subtring_start, $size);
 }
 
 include 'admin.php';
-
                         //==[REGISTER COMMAND]=========//
 
 if ((strpos($message, "!register") === 0)||(strpos($message, "/register") === 0)||(strpos($message, ".register") === 0)||(strpos($message, ",register") === 0)){
