@@ -672,17 +672,17 @@ sendMessage($chatId, '• <b><i> [ GATE IS UNDER MAINTENANCE ]</i></b>', $messag
 function sendChatAction($chatId, $action){
 $data = array("type" => "typing", "rcvoice" => "record_voice", "voice" => "upload_voice", "doc" => "upload_document", "location" => "find_location", "rcvideonote" => "record_video_note", "uvideonote" => "upload_video_note");
 $actiontype = $data["$action"];
-$url = $GLOBALS[website]."/sendChatAction?chat_id=".$chatId."&action=".$actiontype."&parse_mode=HTML";
+$url = $GLOBALS['website']."/sendChatAction?chat_id=".$chatId."&action=".$actiontype."&parse_mode=HTML";
 file_get_contents($url);
 };
 
 function sendMessage ($chatId, $message, $message_id){
-$url = $GLOBALS[website]."/sendMessage?chat_id=".$chatId."&text=".$message."&reply_to_message_id=".$message_id."&parse_mode=HTML";
+$url = $GLOBALS['website']."/sendMessage?chat_id=".$chatId."&text=".$message."&reply_to_message_id=".$message_id."&parse_mode=HTML";
 file_get_contents($url);
 };
 
 function editMessage ($chatId, $message,$message_id){
-$url = $GLOBALS[website]."/editMessageText?chat_id=".$chatId."&text=".$message."&reply_to_message_id=".$message_id."&parse_mode=HTML";
+$url = $GLOBALS['website']."/editMessageText?chat_id=".$chatId."&text=".$message."&reply_to_message_id=".$message_id."&parse_mode=HTML";
 file_get_contents($url);      
 };
 
