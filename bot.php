@@ -1,10 +1,10 @@
-<?php
-                     
-                             //==Webhook Link==//
+<?php       
+      
+                                //==Webhook Link==//
 
-//https://api.telegram.org/bot5672047128:AAHliu9GqRLK-0nrTTrUkOvc0QafKOlCJ3A/setwebhook?url=https:///bot.php
+//https://api.telegram.org/bot8706155925:AAHjpKlqQotuhCBPY0a_Urbdmfo-pQ4YeFo/setwebhook?url=https:///bot.php
 
-$botToken = "6842038220:AAG0r2dG-6nYDBrXHRcHcDjWE2w6oHEbjFo";
+$botToken = "8706155925:AAHjpKlqQotuhCBPY0a_Urbdmfo-pQ4YeFo";
 $website = "https://api.telegram.org/bot".$botToken;
 $update = file_get_contents('php://input');
 $update = json_decode($update, TRUE);
@@ -24,7 +24,7 @@ $message = $update["message"]["text"];
 $message_id = $update["message"]["message_id"];
 $premium = $update["message"]["from"]["is_premium"];
 $p1 = (boolval($premium) ? '𝙿𝚛𝚎𝚖𝚒𝚞𝚖 ✅' : '𝙵𝚛𝚎𝚎 ❌');
-$ownerid = '5579729798';
+$ownerid = '6185091342';
 
 function GetStr($string, $start, $end){
 $str = explode($start, $string);
