@@ -1,4 +1,22 @@
-<?php       
+<?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+$token = getenv('bot_token');
+if (!$token) { echo "NO_TOKEN"; exit; }
+
+$update = json_decode(file_get_contents("php://input"), true);
+
+if (!isset($update["message"])) {
+    http_response_code(200);
+    exit;
+}
+
+$chat_id = $update["message"]["chat"]["id"];
+
+file_get_contents("https://api.telegram.org/bot{$token}/sendMessage?chat_id={$chat_id}&text=Bot is working!");
+
+echo "OK";
       
                                 //==Webhook Link==//
 
